@@ -40,35 +40,23 @@
   }).addTo(map);
 
 	
-	    function onLocationFound(e) {
-      // if position defined, then remove the existing position marker and accuracy circle from the map
-      if (current_position) {
-          map.removeLayer(current_position);
-          map.removeLayer(current_accuracy);
-      }
+function onLocationFound(e) {
+		var radius = e.accuracy / 2;
 
-      var radius = e.accuracy / 2;
+		L.marker(e.latlng).addTo(map)
+			.bindPopup("You are within " + radius + " meters from this point").openPopup();
 
-      current_position = L.marker(e.latlng).addTo(map)
-        .bindPopup("You are within " + radius + " meters from this point").openPopup();
+		L.circle(e.latlng, radius).addTo(map);
+	}
 
-      current_accuracy = L.circle(e.latlng, radius).addTo(map);
-    }
+	function onLocationError(e) {
+		alert(e.message);
+	}
 
-    function onLocationError(e) {
-      alert(e.message);
-    }
+	map.on('locationfound', onLocationFound);
+	map.on('locationerror', onLocationError);
 
-    map.on('locationfound', onLocationFound);
-    map.on('locationerror', onLocationError);
-
-    // wrap map.locate in a function    
-    function locate() {
-      map.locate({setView: true, maxZoom: 18});
-    }
-
-    // call locate every 3 seconds... forever
-    setInterval(locate, 10000);
+	map.locate({setView: true, watch: true, maxZoom: 16});
 
 
 
